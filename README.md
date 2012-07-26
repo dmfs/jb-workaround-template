@@ -10,7 +10,7 @@ Also you will have to change the following files:
 
 * res/values/strings: you have to adjust almost all values according to your needs. Fill in the values from your original sync app.
 * res/xml/account\_preferences.xml: That file should look like your original account\_preferences.xml (actually that shouldn't be necessary anymore)
-* src/org/dmfs/workaround/template/Authenticator.java: (you already change the package name right?) This file should provide basic functionality. (I think this isn't necessary anymore neither) 
+* src/org/dmfs/jb/workaround/template/Authenticator.java: (you already change the package name right?) This file should provide basic functionality. (I think this isn't necessary anymore neither) 
 * res/drawable\*: insert the icons of your original sync app
 
 That's it, I think.
