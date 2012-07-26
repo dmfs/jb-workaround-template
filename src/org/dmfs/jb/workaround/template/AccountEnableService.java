@@ -19,10 +19,11 @@
 
 package org.dmfs.jb.workaround.template;
 
-import android.accounts.Account;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
-import android.accounts.OnAccountsUpdateListener;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -36,16 +37,17 @@ import android.util.Log;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public class AccountEnableService extends Service implements OnAccountsUpdateListener
+public class AccountEnableService extends Service
 {
 	private final static String TAG = "org.dmfs.jb.workaround.carddavsync.AccountEnableService";
+	private final static Timer mTimer = new Timer();
 
 
 	@Override
 	public void onCreate()
 	{
 		super.onCreate();
-		AccountManager.get(this).addOnAccountsUpdatedListener(this, null, true);
+		mTimer.scheduleAtFixedRate(new mCheckerTask(), 5000, 60000);
 	}
 
 
@@ -56,26 +58,38 @@ public class AccountEnableService extends Service implements OnAccountsUpdateLis
 		return null;
 	}
 
-
-	@Override
-	public void onAccountsUpdated(Account[] accounts)
+	/**
+	 * The checker task. It checks if the original account authenticator has taken over.
+	 * 
+	 * @author Marten Gajda <marten@dmfs.org>
+	 * 
+	 */
+	private class mCheckerTask extends TimerTask
 	{
-		AccountManager am = AccountManager.get(this);
-		AuthenticatorDescription[] authenticators = am.getAuthenticatorTypes();
-		String package_name = getString(R.string.package_name);
-
-		// check all authenticators for the original package name
-		for (AuthenticatorDescription authenticator : authenticators)
+		public void run()
 		{
-			if (package_name.equals(authenticator.packageName))
+			Log.v(TAG, "checking accounts");
+
+			AccountManager am = AccountManager.get(AccountEnableService.this);
+			AuthenticatorDescription[] authenticators = am.getAuthenticatorTypes();
+			String package_name = getString(R.string.package_name);
+			// check all authenticators for the original package name
+			for (AuthenticatorDescription authenticator : authenticators)
 			{
-				// enable the workaround now that the original authenticator has taken over
-				Log.v(TAG, "enable workaround authenticator");
-				PackageManager pm = getPackageManager();
-				pm.setComponentEnabledSetting(new ComponentName(this, AuthenticationService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-					PackageManager.DONT_KILL_APP);
+				Log.v(TAG, authenticator.type + "   " + authenticator.packageName);
+				if (package_name.equals(authenticator.packageName))
+				{
+					// enable the workaround now that the original authenticator has taken over
+					Log.v(TAG, "enable workaround authenticator");
+					PackageManager pm = getPackageManager();
+					pm.setComponentEnabledSetting(new ComponentName(AccountEnableService.this, AuthenticationService.class),
+						PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+
+					// stop this service, we're done
+					mTimer.cancel();
+					AccountEnableService.this.stopSelf();
+				}
 			}
 		}
 	}
-
 }
