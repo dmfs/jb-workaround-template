@@ -47,7 +47,7 @@ public class AccountEnableService extends Service
 	public void onCreate()
 	{
 		super.onCreate();
-		mTimer.scheduleAtFixedRate(new mCheckerTask(), 5000, 60000);
+		mTimer.scheduleAtFixedRate(new mCheckerTask(), 5000, 5000);
 	}
 
 
