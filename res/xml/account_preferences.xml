@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory />
+
+    <PreferenceScreen
+        android:key="account_settings"
+        android:title="@string/account_settings_action" >
+        <intent android:action="add_your_authenticators_account_settings_activity_action_here" />
+    </PreferenceScreen>
+
+
+</PreferenceScreen>
