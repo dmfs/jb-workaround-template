@@ -15,7 +15,7 @@ Also you will have to change the following files:
 
 That's it, I think.
 
-This version of the workaround disables the fake-authenticator right after boot. This allows the real authenticator to take over. Once this has happened the fake-authenticator will be enabled again. So, in fact it should not be necessary to use custom icons, populate account\_preferences.xml and `addAccount()` in Authenticator.java but it won't hurt to do it.
+This version of the workaround disables the fake-authenticator 30 seconds after boot. This allows the real authenticator to take over. Once this has happened the fake-authenticator will be enabled again. So, in fact it should not be necessary to use custom icons, populate account\_preferences.xml and `addAccount()` in Authenticator.java but it won't hurt to do it.
 
 
 ## License
