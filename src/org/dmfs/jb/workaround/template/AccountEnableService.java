@@ -39,7 +39,7 @@ import android.util.Log;
  */
 public class AccountEnableService extends Service
 {
-	private final static String TAG = "org.dmfs.jb.workaround.carddavsync.AccountEnableService";
+	private final static String TAG = "org.dmfs.jb.workaround.template.AccountEnableService";
 	private final static Timer mTimer = new Timer();
 
 
@@ -48,6 +48,14 @@ public class AccountEnableService extends Service
 	{
 		super.onCreate();
 		mTimer.scheduleAtFixedRate(new mCheckerTask(), 5000, 5000);
+	}
+
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		// explicitly return START_STICKY
+		return START_STICKY;
 	}
 
 

@@ -19,11 +19,11 @@
 
 package org.dmfs.jb.workaround.template;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 
@@ -37,20 +37,28 @@ public class OnBootReceiver extends BroadcastReceiver
 {
 	private final static String TAG = "org.dmfs.jb.workaround.carddavsync.OnBootReceiver";
 
+	/**
+	 * The number of seconds to wait before we disable the workaround authenticator.
+	 */
+	private final long DELAY = 30; // seconds
+
 
 	@Override
-	public void onReceive(Context context, Intent intent)
+	public void onReceive(final Context context, Intent intent)
 	{
-		PackageManager pm = context.getPackageManager();
 
 		// start the service that re-enables the workaround
 		Intent serviceIntent = new Intent(context, AccountEnableService.class);
 		context.startService(serviceIntent);
 
-		// disable workaround
-		Log.v(TAG, "disable authenticator");
-		pm.setComponentEnabledSetting(new ComponentName(context, AuthenticationService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-			PackageManager.DONT_KILL_APP);
+		// Set an alarm in 30 seconds to disable the authenticator service. That seems to be necessary on some devices.
+		Log.i(TAG, "setting alarm to disable authenticator");
+
+		Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+		PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		final AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DELAY * 1000L, pendingAlarmIntent);
 	}
 
 }
