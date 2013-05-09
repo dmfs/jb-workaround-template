@@ -1,6 +1,4 @@
 /*
- * Authenticator.java
- *
  * Copyright (C) 2012 Marten Gajda <marten@dmfs.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +32,9 @@ import android.os.Bundle;
  * This is the fake authenticator service.
  * 
  * Adjust to your needs. It should mimic the real authenticator and call its activities, this way we don't need to include them here.
+ * 
+ * Ideally this is never called because the original authenticator has taken over again. In practice it might be called on the first sync after a reboot, so be
+ * prepared.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -82,9 +83,10 @@ public class Authenticator extends AbstractAccountAuthenticator
 		}
 
 		final Intent intent = new Intent(mContext.getString(R.string.authenticator_activity));
+		intent.setPackage(mContext.getString(R.string.package_name));
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-		/* add custom paramters here */
+		/* add custom parameters here */
 		intent.putExtra("authtokentype", authTokenType);
 
 		final Bundle bundle = new Bundle();
@@ -103,14 +105,11 @@ public class Authenticator extends AbstractAccountAuthenticator
 	{
 
 		final Intent intent = new Intent(mContext.getString(R.string.password_activity));
+		intent.setPackage(mContext.getString(R.string.package_name));
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
 		/* add custom parameters here */
 		intent.putExtra("account", account);
-		// intent.putExtra("icon", R.drawable.icon);
-		// intent.putExtra("label", R.string.label);
-		intent.putExtra("org.dmfs.PasswordQuery.notificationId", 78979);
-		intent.putExtra("confirm", true);
 
 		final Bundle bundle = new Bundle();
 		bundle.putParcelable(AccountManager.KEY_INTENT, intent);
@@ -137,7 +136,7 @@ public class Authenticator extends AbstractAccountAuthenticator
 		final AccountManager am = AccountManager.get(mContext);
 		final String password = am.getPassword(account);
 
-		/* in this case just return the password */
+		/* in this example just return the password */
 		if (password != null)
 		{
 
@@ -146,20 +145,15 @@ public class Authenticator extends AbstractAccountAuthenticator
 			result.putString(AccountManager.KEY_ACCOUNT_TYPE, getAccountType(mContext));
 			result.putString(AccountManager.KEY_AUTHTOKEN, password);
 			return result;
-			// }
 		}
 
-		/* or call an activtiy that returns the authtoken */
+		/* or call an activity that returns the authtoken */
 		final Intent intent = new Intent(mContext.getString(R.string.password_activity));
+		intent.setPackage(mContext.getString(R.string.package_name));
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
 		/* change parameters to your needs */
 		intent.putExtra("account", account);
-		intent.putExtra("authtokentype", authTokenType);
-		// intent.putExtra("icon", R.drawable.icon);
-		// intent.putExtra("label", R.string.label);
-		intent.putExtra("org.dmfs.PasswordQuery.notificationId", 78979);
-		intent.putExtra("return", true);
 
 		final Bundle bundle = new Bundle();
 		bundle.putParcelable(AccountManager.KEY_INTENT, intent);
@@ -188,13 +182,11 @@ public class Authenticator extends AbstractAccountAuthenticator
 	public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException
 	{
 		final Intent intent = new Intent(mContext.getString(R.string.password_activity));
+		intent.setPackage(mContext.getString(R.string.package_name));
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
+		/* change parameters to your needs */
 		intent.putExtra("account", account);
-		intent.putExtra("authtokentype", authTokenType);
-		// intent.putExtra("icon", R.drawable.icon);
-		// intent.putExtra("label", R.string.label);
-		intent.putExtra("org.dmfs.PasswordQuery.notificationId", 78979);
 
 		final Bundle bundle = new Bundle();
 		bundle.putParcelable(AccountManager.KEY_INTENT, intent);

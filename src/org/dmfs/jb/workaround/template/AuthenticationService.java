@@ -1,6 +1,4 @@
 /*
- * AuthenticationService.java
- *
  * Copyright (C) 2012 Marten Gajda <marten@dmfs.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +37,13 @@ public class AuthenticationService extends Service
 	{
 		super.onCreate();
 		mAuthenticator = new Authenticator(this);
+
+		/*
+		 * Actually we don't want the workaround authenticator, it's better to let the original authenticator do the job. Start a Service that ensures
+		 * everything is in place.
+		 */
+		Intent serviceIntent = new Intent(this, WorkaroundDisableService.class);
+		startService(serviceIntent);
 	}
 
 
