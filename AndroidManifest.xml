@@ -4,8 +4,8 @@
     android:versionName="1.3" >
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.DEVICE_POWER" />
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -33,6 +33,12 @@
                 <action android:name="org.dmfs.jb_workaround.INIT" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".ShutdownReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
